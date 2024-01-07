@@ -9,8 +9,6 @@ const main = async () => {
 
   const app = express();
 
-  const port = process.env.PORT || 8000;
-
   await MongoClient.connect();
 
   app.get("/users", async (req, res) => {
@@ -22,6 +20,7 @@ const main = async () => {
     res.send(body).status(statusCode);
   });
 
+  const port = process.env.PORT || 8000;
   app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
 };
 
