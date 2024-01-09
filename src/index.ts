@@ -3,7 +3,7 @@ import { config } from "dotenv";
 import { MongoClient } from "./database/mongo";
 import { MongoGetUsersRepository } from "./repositories/get-users/mongo-get-users";
 import { GetUsersController } from "./controllers/get-users/get-users";
-import { MongoCreateUserRepository } from "./repositories/create-user/create-user";
+import { MongoCreateUserRepository } from "./repositories/create-user/mongo-create-user";
 import { CreateUserController } from "./controllers/create-user/create-user";
 
 const main = async () => {
