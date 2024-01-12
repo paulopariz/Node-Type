@@ -1,3 +1,4 @@
+import { UpdateUserController } from "./controllers/update-user/update-user";
 import express from "express";
 import { config } from "dotenv";
 import { MongoClient } from "./database/mongo";
@@ -5,6 +6,7 @@ import { MongoGetUsersRepository } from "./repositories/get-users/mongo-get-user
 import { GetUsersController } from "./controllers/get-users/get-users";
 import { MongoCreateUserRepository } from "./repositories/create-user/mongo-create-user";
 import { CreateUserController } from "./controllers/create-user/create-user";
+import { MongoUpdateUserRepository } from "./repositories/update-user/mongo-update";
 
 const main = async () => {
   config();
@@ -25,7 +27,7 @@ const main = async () => {
   });
 
   //create
-  app.post("/users", async (req, res) => {
+  app.post("/user", async (req, res) => {
     const mongoCreateUserRepository = new MongoCreateUserRepository();
     const createUserController = new CreateUserController(
       mongoCreateUserRepository
@@ -38,6 +40,20 @@ const main = async () => {
     res.status(statusCode).send(body);
   });
 
+  //update
+  app.patch("/user/:id", async (req, res) => {
+    const mongoUpdateUserRepository = new MongoUpdateUserRepository();
+    const updateUserController = new UpdateUserController(
+      mongoUpdateUserRepository
+    );
+
+    const { body, statusCode } = await updateUserController.handle({
+      body: req.body,
+      params: req.params,
+    });
+
+    res.status(statusCode).send(body);
+  });
   const port = process.env.PORT || 8000;
   app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
 };
