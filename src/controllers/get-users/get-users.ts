@@ -1,7 +1,7 @@
-import { User } from "@linear/sdk";
 import { HttpResponse, IController } from "../protocols";
 import { IGetUsersRepository } from "./protocols";
 import { ok, serverError } from "../helpers";
+import { User } from "../../models/user";
 
 export class GetUsersController implements IController {
   constructor(private readonly getUsersRepository: IGetUsersRepository) {}
