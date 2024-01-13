@@ -1,28 +1,32 @@
-import { ObjectId } from "mongodb";
-import { IDeleteUserRepository } from "../../controllers/delete-user/protocols";
-import { MongoClient } from "../../database/mongo";
 import { User } from "../../models/user";
+import { HttpRequest, HttpResponse } from "../protocols";
+import { IDeleteUserController, IDeleteUserRepository } from "./protocols";
 
-export class MongoDeleteUserRepository implements IDeleteUserRepository {
-  async deleteUser(id: string): Promise<User> {
-    const user = await MongoClient.db
-      .collection<Omit<User, "id">>("users")
-      .findOne({ _id: new ObjectId(id) });
+export class DeleteUserController implements IDeleteUserController {
+  constructor(private readonly delteUserRepository: IDeleteUserRepository) {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async handle(httpRequest: HttpRequest<any>): Promise<HttpResponse<User>> {
+    try {
+      const id = httpRequest.params?.id;
 
-    if (!user) {
-      throw new Error("User not found");
+      if (!id) {
+        return {
+          statusCode: 400,
+          body: "Missing user id",
+        };
+      }
+
+      const user = await this.delteUserRepository.deleteUser(id);
+
+      return {
+        statusCode: 200,
+        body: user,
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        body: "Somenthing went wrong",
+      };
     }
-
-    const { deletedCount } = await MongoClient.db
-      .collection("users")
-      .deleteOne({ _id: new ObjectId(id) });
-
-    if (!deletedCount) {
-      throw new Error("User not deleted");
-    }
-
-    const { _id, ...rest } = user;
-
-    return { id: _id.toHexString(), ...rest };
   }
 }
